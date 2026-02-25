@@ -6,12 +6,22 @@ require('dotenv').config();
 
 const app = express();
 
-app.use(cors());
+// CORS - Allow all origins
+app.use(cors({
+  origin: '*',
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: false
+}));
+
+// Handle preflight requests
+app.options('*', cors());
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Serve static files from React build
-app.use(express.static(path.join(__dirname, '/dist')));
+app.use(express.static(path.join(__dirname, 'dist')));
 
 // API Routes
 app.use('/api/auth', require('./routes/auth'));
@@ -32,7 +42,7 @@ app.use('/api/setup', require('./routes/setup'));
 
 // Serve React app for all non-API routes
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '/dist/index.html'));
+  res.sendFile(path.join(__dirname, 'dist/index.html'));
 });
 
 // MongoDB Connection
